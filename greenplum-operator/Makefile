@@ -7,6 +7,7 @@ GREENPLUM_OPERATOR_IMAGE_TAG:=$(GREENPLUM_OPERATOR_IMAGE_REPO):$(TAG_PREFIX)$(sh
 GOBIN:=$(PWD)/bin
 DATE:=$(shell date +%FT%H:%M:%S)
 DOCKERTAG_PREFIX:=greenplum-operator
+GREENPLUM_VERSION:=6.24.6
 OLD_UPGRADE_VERSION:=v2.2.0
 CONCOURSE_BUILD?=false
 
@@ -17,6 +18,26 @@ build: build-in-docker
 docker: package-in-docker
 
 sources := $(shell find . -name "*.go" -print)
+
+# package-in-docker: export DOCKER_BUILDKIT=1
+#container-structure-test-in-docker: export DOCKER_BUILDKIT=1
+# package-in-docker container-structure-test-in-docker: $(sources) Dockerfile Dockerfile_container_structure_test Dockerfile_test.yml
+# package-in-docker: $(sources) Dockerfile #Dockerfile_container_structure_test Dockerfile_test.yml
+# 	@$(MAKE) generate manifests
+# 	@if [ -z "${GREENPLUM_VERSION}" ]; then \
+# 		GREENPLUM_VERSION=$$(gcloud container images list-tags gcr.io/gp-kubernetes/ubuntu-gpdb-ent --filter='tags=latest' --format='value(tags.filter(NOT "latest"))') ; \
+#     fi; \
+# 	echo "Using GREENPLUM_VERSION: $${GREENPLUM_VERSION}" ; \
+# 	docker build \
+# 		--iidfile package-in-docker \
+# 		-t "$(GREENPLUM_OPERATOR_IMAGE_TAG)" \
+# 		-t "$(GREENPLUM_OPERATOR_IMAGE_REPO):latest" \
+# 		-f Dockerfile \
+# 		--build-arg CONCOURSE_BUILD=$(CONCOURSE_BUILD) \
+# 		--build-arg VERSION=$(RELEASE_VERSION) \
+# 		--build-arg DATE="$(DATE)" \
+# 		--build-arg GREENPLUM_VERSION="$${GREENPLUM_VERSION}" \
+# 		.. 
 
 package-in-docker: export DOCKER_BUILDKIT=1
 container-structure-test-in-docker: export DOCKER_BUILDKIT=1
@@ -137,15 +158,15 @@ cmd/greenplumReady/greenplumReady: cmd/greenplumReady/main.go ../pkg/integration
 
 .PHONY: regsecret
 regsecret:
-	@if [ $$(kubectl get secret regsecret --no-headers | wc -l) == "1" ]; then \
+	@if [ $$(../minikube/install-dir/kubectl get secret regsecret --no-headers | wc -l) == "1" ]; then \
 		echo "INFO: regsecret already present. Skipping creating regsecret..."; \
 	else \
 		if [ "$$GCP_SVC_ACCT_KEY" != "" ] ; then \
-			kubectl create secret docker-registry regsecret --docker-server=https://gcr.io --docker-username=_json_key --docker-password="$$GCP_SVC_ACCT_KEY";\
+			../minikube/install-dir/kubectl create secret docker-registry regsecret --docker-server=https://gcr.io --docker-username=_json_key --docker-password="$$GCP_SVC_ACCT_KEY";\
 		 elif [ -f operator/key.json ]; then \
-			kubectl create secret  docker-registry  regsecret --docker-server=https://gcr.io --docker-username=_json_key --docker-password="`cat operator/key.json`";\
+			../minikube/install-dir/kubectl create secret  docker-registry  regsecret --docker-server=https://docker.io --docker-username=jike21 --docker-password="`cat operator/key.json`";\
 		 else \
-			echo "ERROR: could not find google service account key in env or operator dir" && exit 1; \
+			echo "ERROR: could not find google service account key in env or operator dir"; \
 		fi \
 	fi
 
@@ -161,18 +182,14 @@ gke-deploy:
 
 .PHONY: deploy-gpdb
 deploy-gpdb:
-	cat ../workspace/my-gp-instance.yaml | kubectl create -f -
+	cat ../workspace/my-gp-instance.yaml | ../minikube/install-dir/kubectl create -f -
 	cmd/greenplumReady/greenplumReady
 
 .PHONY: gke-deploy-gpdb
 gke-deploy-gpdb: deploy-gpdb
 
 .PHONY: deploy-operator
-deploy-operator: regsecret cmd/greenplumReady/greenplumReady
-	OPERATOR_IMAGE_REPO=$$(yq r operator/values.yaml operatorImageRepository) \
-	OPERATOR_IMAGE_TAG=$$(yq r operator/values.yaml operatorImageTag) \
-	GREENPLUM_IMAGE_REPO=$$(yq r operator/values.yaml greenplumImageRepository) \
-	GREENPLUM_IMAGE_TAG=$$(yq r operator/values.yaml greenplumImageTag) \
+deploy-operator: # regsecret cmd/greenplumReady/greenplumReady
 	$(MAKE) deploy-operator-impl
 
 .PHONY: gke-deploy-operator
@@ -184,31 +201,31 @@ gke-deploy-operator: regsecret cmd/greenplumReady/greenplumReady
 
 .PHONY: deploy-operator-impl
 deploy-operator-impl:
-	helm install greenplum-operator ./operator \
-		--set operatorImageRepository=$$OPERATOR_IMAGE_REPO \
-		--set operatorImageTag=$$OPERATOR_IMAGE_TAG \
-		--set greenplumImageRepository=$$GREENPLUM_IMAGE_REPO \
-		--set greenplumImageTag=$$GREENPLUM_IMAGE_TAG
+	../minikube/install-dir/helm install greenplum-operator ./operator \
+		--set operatorImageRepository="jike21/greenplum-operator" \
+		--set operatorImageTag="v1-remove-webhook" \
+		--set greenplumImageRepository="jike21/greenplum-gp4k" \
+		--set greenplumImageTag="v1-remove-webhook"
 	for i in {1..3}; \
-		do kubectl wait --for condition=available deployment.apps/greenplum-operator && break || sleep 1; \
+		do ../minikube/install-dir/kubectl wait --for condition=available deployment.apps/greenplum-operator && break || sleep 1; \
 	done
 
 .PHONY: deploy-clean
 deploy-clean:
-	kubectl delete -f ../workspace/my-gp-instance.yaml || true
-	kubectl delete crd greenplumclusters.greenplum.pivotal.io || true
-	kubectl delete crd greenplumpxfservices.greenplum.pivotal.io || true
-	kubectl delete --wait all  -l app=greenplum > /dev/null 2>&1 || true
-	kubectl delete pvc --all || true
-	kubectl delete --wait configmap/greenplum-config secrets/ssh-secrets > /dev/null 2>&1 || true
-	helm uninstall greenplum-operator || true
-	kubectl	wait --for=delete deployment.apps/greenplum-operator || true
-	kubectl delete service/greenplum-validating-webhook || true
-	kubectl delete validatingwebhookconfigurations greenplum-validating-webhook-config || true
-	kubectl delete csr greenplum-validating-webhook || true
-	kubectl delete jobs --all || true
-	kubectl delete --wait secrets/regsecret > /dev/null 2>&1 || true
-	while [ "$$(kubectl get all 2>/dev/null | wc -l)" -gt 2 ]; do sleep 1; printf "."; done
+	../minikube/install-dir/kubectl delete -f ../workspace/my-gp-instance.yaml || true
+	../minikube/install-dir/kubectl delete crd greenplumclusters.greenplum.pivotal.io || true
+	../minikube/install-dir/kubectl delete crd greenplumpxfservices.greenplum.pivotal.io || true
+	../minikube/install-dir/kubectl delete --wait all  -l app=greenplum > /dev/null 2>&1 || true
+	../minikube/install-dir/kubectl delete pvc --all || true
+	../minikube/install-dir/kubectl delete --wait configmap/greenplum-config secrets/ssh-secrets > /dev/null 2>&1 || true
+	../minikube/install-dir/helm uninstall greenplum-operator || true
+	../minikube/install-dir/kubectl	wait --for=delete deployment.apps/greenplum-operator || true
+	../minikube/install-dir/kubectl delete service/greenplum-validating-webhook || true
+	../minikube/install-dir/kubectl delete validatingwebhookconfigurations greenplum-validating-webhook-config || true
+	../minikube/install-dir/kubectl delete csr greenplum-validating-webhook || true
+	../minikube/install-dir/kubectl delete jobs --all || true
+	../minikube/install-dir/kubectl delete --wait secrets/regsecret > /dev/null 2>&1 || true
+	while [ "$$(../minikube/install-dir/kubectl get all 2>/dev/null | wc -l)" -gt 2 ]; do sleep 1; printf "."; done
 
 .PHONY: gke-deploy-clean
 gke-deploy-clean: deploy-clean
@@ -245,7 +262,7 @@ CRD_OPTIONS ?= "crd:crdVersions=v1"
 # Generate manifests e.g. CRD, RBAC etc.
 manifests: controller-gen
 	$(CONTROLLER_GEN) $(CRD_OPTIONS) rbac:roleName=manager-role webhook paths="./..." output:crd:artifacts:config=config/crd/bases
-	kubectl kustomize config/crd > operator/templates/greenplum-operator-crds.yaml
+	../minikube/install-dir/kubectl kustomize config/crd > operator/templates/greenplum-operator-crds.yaml
 
 # Generate code
 generate: controller-gen
@@ -254,9 +271,9 @@ generate: controller-gen
 # find or download controller-gen
 # download controller-gen if necessary
 controller-gen:
-ifeq (, $(shell which controller-gen))
+ifeq (, $(shell which /home/guest1/gpdb-for-kubernetes-remove-webhook/greenplum-operator/bin/controller-gen))
 	go get -modfile ../tools/go.mod sigs.k8s.io/controller-tools/cmd/controller-gen@v0.10.0
 CONTROLLER_GEN=$(GOBIN)/controller-gen
 else
-CONTROLLER_GEN=$(shell which controller-gen)
+CONTROLLER_GEN=$(shell which /home/guest1/gpdb-for-kubernetes-remove-webhook/greenplum-operator/bin/controller-gen)
 endif

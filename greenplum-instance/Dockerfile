@@ -22,7 +22,7 @@ RUN --mount=type=cache,target=/root/.cache/go-build \
     ./cmd/waitForKnownHosts
 
 # build greenplum-instance image from here
-FROM jike21/greenplum-oss:test
+FROM jike21/greenplum-oss:6.24.6-really
 
 # remove gppkg because it's misleading to users in the kubernetes environment
 RUN rm -f /usr/local/greenplum-db/bin/gppkg
@@ -103,7 +103,7 @@ RUN /bin/bash -c 'source /usr/local/greenplum-db/greenplum_path.sh'
 
 EXPOSE 22
 
-ARG VERSION=dev
+ARG VERSION=commit
 ARG DATE="10 July 2023"
 ARG LICENSE="https://www.apache.org/licenses/LICENSE-2.0"
 

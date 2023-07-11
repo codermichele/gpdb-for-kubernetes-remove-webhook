@@ -7,6 +7,7 @@ GOBIN:=$(PWD)/bin
 DATE:=$(shell date +%FT%H:%M:%S)
 # TODO: rename this.
 DOCKERTAG_PREFIX:=greenplum-instance
+GREENPLUM_VERSION:=6.24.6
 CONCOURSE_BUILD?=false
 
 UNAME:=$(shell uname -s)
@@ -29,6 +30,26 @@ docker-check: package-in-docker container-structure-test-in-docker
 
 .PHONY: docker
 docker: package-in-docker
+
+# package-in-docker: export DOCKER_BUILDKIT=1
+#container-structure-test-in-docker: export DOCKER_BUILDKIT=1
+# package-in-docker: $(sources) Dockerfile # Dockerfile_container_structure_test Dockerfile_test.yml scripts/* scripts/build/*
+# 	@if [ -z "${GREENPLUM_VERSION}" ]; then \
+# 		GREENPLUM_VERSION=$$(gcloud container images list-tags gcr.io/gp-kubernetes/ubuntu-gpdb-ent --filter="tags=$${TAG_PREFIX}latest" --format="value(tags.filter(NOT \"$${TAG_PREFIX}latest\"))" | cut -c $$(($${#TAG_PREFIX}+1))-) ; \
+#     fi; \
+# 	echo "Using GREENPLUM_VERSION: $${GREENPLUM_VERSION}" ; \
+# 	echo "Using CONCOURSE_BUILD: $(CONCOURSE_BUILD)" ; \
+# 	docker build \
+# 		--iidfile package-in-docker \
+# 		-t "$(IMAGE_TAG)" \
+# 		-t "$(IMAGE_REPO):latest" \
+# 		-f Dockerfile \
+# 		--build-arg CONCOURSE_BUILD=$(CONCOURSE_BUILD) \
+# 		--build-arg VERSION="$(RELEASE_VERSION)" \
+# 		--build-arg DATE="$(DATE)" \
+# 		--build-arg TAG_PREFIX="$(TAG_PREFIX)" \
+# 		--build-arg GREENPLUM_VERSION="$${GREENPLUM_VERSION}" \
+# 		..
 
 package-in-docker: export DOCKER_BUILDKIT=1
 container-structure-test-in-docker: export DOCKER_BUILDKIT=1
