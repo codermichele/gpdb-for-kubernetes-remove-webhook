@@ -68,15 +68,13 @@ RUN \
 ENV PXF_CONF=/etc/pxf
 RUN mkdir -p ${PXF_CONF} && chown -R gpadmin:gpadmin ${PXF_CONF}
 
-RUN apt-get install -y software-properties-common
+#RUN apt-get install -y software-properties-common
 RUN add-apt-repository -y ppa:ubuntugis/ppa
 RUN apt update
 RUN apt-get install -y libgeos-3.7.1 libgeos++-dev  libgeos-c1v5  libgeos-dev libgeos-doc \
     proj-bin \
-    libxml2 libxml2-dev \
     libjson-c-dev \
     protobuf-c-compiler protobuf-compiler libprotobuf-c1 libprotobuf-c-dev \
-    autoconf \
     expat \
     libcunit1 libcunit1-dev
 
