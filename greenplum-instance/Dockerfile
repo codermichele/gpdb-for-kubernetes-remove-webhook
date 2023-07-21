@@ -54,8 +54,8 @@ COPY /greenplum-instance/scripts/gpexpand_job.sh ${TOOLS_DIR}/
 COPY greenplum-instance/scripts/gpadmin-limits.conf /etc/security/limits.d/
 
 RUN mv /etc/sudoers /etc/sudoers.bak \
-&& chmod +x /greenplum-for-kubernetes/greenplum-instance/sysconf.bash \
-&& /greenplum-for-kubernetes/greenplum-instance/sysconf.bash \
+&& chmod +x ${TOOLS_DIR}/sysconf.bash \
+&& ${TOOLS_DIR}/sysconf.bash \
 && mv /etc/sudoers.bak /etc/sudoers \
 && rm -f /etc/ssh/ssh_host_*_key* \
 # comment out all other host key files
