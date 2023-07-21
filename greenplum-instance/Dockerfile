@@ -60,8 +60,8 @@ RUN mv /etc/sudoers /etc/sudoers.bak \
 && rm -f /etc/ssh/ssh_host_*_key* \
 # comment out all other host key files
 && sed -ri 's@^HostKey /etc/ssh/ssh_host_dsa_key$@#&@' /etc/ssh/sshd_config \
-&& sed -ri 's@^HostKey /etc/ssh/ssh_host_ecdsa_key$@#&@' /etc/ssh/sshd_config && \
-&& sed -ri 's@^HostKey /etc/ssh/ssh_host_ed25519_key$@#&@' /etc/ssh/sshd_config && \
+&& sed -ri 's@^HostKey /etc/ssh/ssh_host_ecdsa_key$@#&@' /etc/ssh/sshd_config \
+&& sed -ri 's@^HostKey /etc/ssh/ssh_host_ed25519_key$@#&@' /etc/ssh/sshd_config \
 # uncomment the rsa host key file
 && sed -ri '\@^#HostKey /etc/ssh/ssh_host_rsa_key$@s@^#@@g' /etc/ssh/sshd_config \
 # See https://gist.github.com/gasi/5691565
