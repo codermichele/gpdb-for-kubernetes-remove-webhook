@@ -30,8 +30,8 @@ RUN rm -f /usr/local/greenplum-db/bin/gppkg
 ARG TOOLS_DIR=/tools
 
 RUN mv /etc/sudoers /etc/sudoers.bak \
-&& chmod +x greenplum-instance/sysconf.bash \
-&& greenplum-instance/sysconf.bash \
+&& chmod +x /greenplum-for-kubernetes/greenplum-instance/sysconf.bash \
+&& /greenplum-for-kubernetes/greenplum-instance/sysconf.bash \
 && mv /etc/sudoers.bak /etc/sudoers
 #RUN apt-get update
 #RUN apt-get -y install sudo iproute2 rsync
