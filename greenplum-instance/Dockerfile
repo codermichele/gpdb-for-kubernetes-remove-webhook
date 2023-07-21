@@ -29,10 +29,13 @@ RUN rm -f /usr/local/greenplum-db/bin/gppkg
 
 ARG TOOLS_DIR=/tools
 
-RUN mv /etc/sudoers /etc/sudoers.bak
-RUN apt-get update
-RUN apt-get -y install sudo iproute2 rsync
-RUN mv /etc/sudoers.bak /etc/sudoers
+RUN mv /etc/sudoers /etc/sudoers.bak \
+&& chmod +x greenplum-instance/sysconf.bash \
+&& greenplum-instance/sysconf.bash \
+&& mv /etc/sudoers.bak /etc/sudoers
+#RUN apt-get update
+#RUN apt-get -y install sudo iproute2 rsync
+#RUN mv /etc/sudoers.bak /etc/sudoers
 
 COPY --from=build-in-docker \
     /greenplum-for-kubernetes/greenplum-instance/buildcmd/sshKeyScan \
@@ -65,24 +68,24 @@ RUN \
     chmod 0755 /var/run/sshd && \
     echo "gpadmin ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 
-ENV PXF_CONF=/etc/pxf
-RUN mkdir -p ${PXF_CONF} && chown -R gpadmin:gpadmin ${PXF_CONF}
+#ENV PXF_CONF=/etc/pxf
+#RUN mkdir -p ${PXF_CONF} && chown -R gpadmin:gpadmin ${PXF_CONF}
 
 #RUN apt-get install -y software-properties-common
 #RUN add-apt-repository -y ppa:ubuntugis/ppa
-RUN apt update
-RUN apt-get install -y \
-    #libgeos-3.7.1 libgeos++-dev  libgeos-c1v5  libgeos-dev libgeos-doc \
-    proj-bin \
-    libjson-c-dev \
-    protobuf-c-compiler protobuf-compiler libprotobuf-c1 libprotobuf-c-dev \
-    expat \
-    libcunit1 libcunit1-dev
+#RUN apt update
+#RUN apt-get install -y \
+#    #libgeos-3.7.1 libgeos++-dev  libgeos-c1v5  libgeos-dev libgeos-doc \
+#    proj-bin \
+#    libjson-c-dev \
+#    protobuf-c-compiler protobuf-compiler libprotobuf-c1 libprotobuf-c-dev \
+#    expat \
+#    libcunit1 libcunit1-dev
 
 # Install tini
-RUN wget https://github.com/krallin/tini/releases/download/v0.19.0/tini_0.19.0-amd64.deb && \
-    dpkg -i tini_0.19.0-amd64.deb && \
-    rm tini_0.19.0-amd64.deb
+#RUN wget https://github.com/krallin/tini/releases/download/v0.19.0/tini_0.19.0-amd64.deb && \
+#    dpkg -i tini_0.19.0-amd64.deb && \
+#    rm tini_0.19.0-amd64.deb
 ENTRYPOINT ["/usr/bin/tini", "--"]
 
 USER gpadmin
