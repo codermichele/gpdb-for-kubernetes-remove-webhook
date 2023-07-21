@@ -44,29 +44,32 @@ COPY --from=build-in-docker \
     /greenplum-for-kubernetes/greenplum-instance/buildcmd/startPXF \
     /greenplum-for-kubernetes/greenplum-instance/buildcmd/runGpexpand \
     /greenplum-for-kubernetes/greenplum-instance/buildcmd/waitForKnownHosts \
-    ${TOOLS_DIR}/
-
-COPY \
-    greenplum-instance/scripts/gpexpand_job.sh \
+    /greenplum-instance/scripts/gpexpand_job.sh \
+    /greenplum-for-kubernetes/greenplum-instance/greenplum-instance-debs/* \
+    /greenplum-for-kubernetes/greenplum-instance\sysconf.bash \
+    /greenplum-for-kubernetes/greenplum-instance/greenplum_instance_apt_install_order.txt \
     ${TOOLS_DIR}/
 
 COPY greenplum-instance/scripts/gpadmin-limits.conf /etc/security/limits.d/
 
-RUN \
-    rm -f /etc/ssh/ssh_host_*_key* && \
-    # comment out all other host key files
-    sed -ri 's@^HostKey /etc/ssh/ssh_host_dsa_key$@#&@' /etc/ssh/sshd_config && \
-    sed -ri 's@^HostKey /etc/ssh/ssh_host_ecdsa_key$@#&@' /etc/ssh/sshd_config && \
-    sed -ri 's@^HostKey /etc/ssh/ssh_host_ed25519_key$@#&@' /etc/ssh/sshd_config && \
-    # uncomment the rsa host key file
-    sed -ri '\@^#HostKey /etc/ssh/ssh_host_rsa_key$@s@^#@@g' /etc/ssh/sshd_config && \
-    # See https://gist.github.com/gasi/5691565
-    sed -ri 's/UsePAM yes/UsePAM no/g' /etc/ssh/sshd_config && \
-    # Disable password authentication so builds never hang given bad keys
-    sed -ri 's/#PasswordAuthentication yes/PasswordAuthentication no/g' /etc/ssh/sshd_config && \
-    mkdir -p /var/run/sshd && \
-    chmod 0755 /var/run/sshd && \
-    echo "gpadmin ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+RUN mv /etc/sudoers /etc/sudoers.bak \
+&& chmod +x /greenplum-for-kubernetes/greenplum-instance/sysconf.bash \
+&& /greenplum-for-kubernetes/greenplum-instance/sysconf.bash \
+&& mv /etc/sudoers.bak /etc/sudoers \
+&& rm -f /etc/ssh/ssh_host_*_key* \
+&& \# comment out all other host key files \
+&& sed -ri 's@^HostKey /etc/ssh/ssh_host_dsa_key$@#&@' /etc/ssh/sshd_config \
+&& sed -ri 's@^HostKey /etc/ssh/ssh_host_ecdsa_key$@#&@' /etc/ssh/sshd_config && \
+&& sed -ri 's@^HostKey /etc/ssh/ssh_host_ed25519_key$@#&@' /etc/ssh/sshd_config && \
+&& \# uncomment the rsa host key file \
+&& sed -ri '\@^#HostKey /etc/ssh/ssh_host_rsa_key$@s@^#@@g' /etc/ssh/sshd_config \
+&& \# See https://gist.github.com/gasi/5691565 \
+&& sed -ri 's/UsePAM yes/UsePAM no/g' /etc/ssh/sshd_config \
+&& \# Disable password authentication so builds never hang given bad keys \
+&& sed -ri 's/#PasswordAuthentication yes/PasswordAuthentication no/g' /etc/ssh/sshd_config \
+&& mkdir -p /var/run/sshd  \
+&& chmod 0755 /var/run/sshd \
+&& echo "gpadmin ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 
 #ENV PXF_CONF=/etc/pxf
 #RUN mkdir -p ${PXF_CONF} && chown -R gpadmin:gpadmin ${PXF_CONF}
