@@ -45,7 +45,7 @@ COPY --from=build-in-docker \
     /greenplum-for-kubernetes/greenplum-instance/buildcmd/runGpexpand \
     /greenplum-for-kubernetes/greenplum-instance/buildcmd/waitForKnownHosts \
     /greenplum-for-kubernetes/greenplum-instance/greenplum-instance-debs/* \
-    /greenplum-for-kubernetes/greenplum-instance\sysconf.bash \
+    /greenplum-for-kubernetes/greenplum-instance/sysconf.bash \
     /greenplum-for-kubernetes/greenplum-instance/greenplum_instance_apt_install_order.txt \
     ${TOOLS_DIR}/
 
