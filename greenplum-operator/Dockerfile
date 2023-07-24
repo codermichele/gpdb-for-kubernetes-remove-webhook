@@ -13,9 +13,14 @@ RUN --mount=type=cache,target=/root/.cache/go-build \
 # build greenplum-operator image from here
 FROM cloudfoundry/run:base
 
+#COPY --from=build-in-docker \
+#    /greenplum-for-kubernetes/greenplum-operator/cmd/greenplumOperator/greenplumOperator \
+#    /usr/local/bin/greenplum-operator
+
 COPY --from=build-in-docker \
     /greenplum-for-kubernetes/greenplum-operator/cmd/greenplumOperator/greenplumOperator \
-    /usr/local/bin/greenplum-operator
+    /go/pkg/mod/*
+    /usr/local/bin
 
 RUN set -x && \
     apt-get update && \
