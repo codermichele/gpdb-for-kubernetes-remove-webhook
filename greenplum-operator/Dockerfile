@@ -5,12 +5,13 @@ COPY greenplum-operator/ /greenplum-for-kubernetes/greenplum-operator/
 COPY pkg/ /greenplum-for-kubernetes/pkg/
 COPY go.mod go.sum /greenplum-for-kubernetes/
 #COPY greenplum-operator/vendor/ /usr/local/go/src/cmd/vendor/ 
+WORKDIR /greenplum-for-kubernetes
+RUN go mod vendor
 
 WORKDIR /greenplum-for-kubernetes/greenplum-operator
 RUN --mount=type=cache,target=/root/.cache/go-build \
     --mount=type=cache,target=/go/pkg/mod \
-    cd cmd/greenplumOperator && go build && go mod vendor \
-    && find / -name vendor   
+    cd cmd/greenplumOperator && go build
 
 # build greenplum-operator image from here
 FROM cloudfoundry/run:base
