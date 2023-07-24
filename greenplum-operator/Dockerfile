@@ -20,14 +20,22 @@ FROM cloudfoundry/run:base
 
 COPY --from=build-in-docker \
     /greenplum-for-kubernetes/greenplum-operator/cmd/greenplumOperator/greenplumOperator \
-    /greenplum-for-kubernetes/vendor \
     /usr/local/bin/
 
+#RUN set -x && \
+#    apt-get update && \
+#    apt-get upgrade -y && \
+#    apt-get clean && \
+#    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+COPY /greenplum-for-kubernetes/greenplum-operator/greenplum_operator_apt_install_order.txt \
+     /greenplum-for-kubernetes/greenplum-operator/greenplum-operator-debs/ \
+     /greenplum-for-kubernetes/greenplum-operator/sysconf.bash \
+     /greenplum-for-kubernetes/
+
 RUN set -x && \
-    apt-get update && \
-    apt-get upgrade -y && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+&& chmod +x /greenplum-for-kubernetes/greenplum-operator/sysconf.bash \
+&& /greenplum-for-kubernetes/greenplum-operator/sysconf.bash \
+&& rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 ARG DATE="10 July 2023"
 ARG LICENSE="https://www.apache.org/licenses/LICENSE-2.0"
