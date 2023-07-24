@@ -22,4 +22,4 @@
 22_openssl_1.1.1-1ubuntu2.1_18.04.23_amd64.deb
 23_ca-certificates_20230311ubuntu0.18.04.1_all.deb
 24_libexpat1_2.2.5-3ubuntu0.9_amd64.deb
-25_tzdata
+25_tzdata_2023c-0ubuntu0.18.04_all.deb
