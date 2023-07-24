@@ -4,9 +4,11 @@ FROM golang:1.19 as build-in-docker
 COPY greenplum-operator/ /greenplum-for-kubernetes/greenplum-operator/
 COPY pkg/ /greenplum-for-kubernetes/pkg/
 COPY go.mod go.sum /greenplum-for-kubernetes/
-WORKDIR /greenplum-for-kubernetes
-RUN go mod vendor \
-&& find / -name vendor
+COPY greenplum-operator/vendor /greenplum-for-kubernetes/vendor
+
+#WORKDIR /greenplum-for-kubernetes
+#RUN go mod vendor \
+#&& find / -name vendor
 
 WORKDIR /greenplum-for-kubernetes/greenplum-operator
 RUN --mount=type=cache,target=/root/.cache/go-build \
