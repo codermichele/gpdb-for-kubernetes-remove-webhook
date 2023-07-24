@@ -10,6 +10,9 @@ RUN --mount=type=cache,target=/root/.cache/go-build \
     --mount=type=cache,target=/go/pkg/mod \
     cd cmd/greenplumOperator && go build
 
+RUN find / -name "github.com" \
+&& echo "123456789"
+
 # build greenplum-operator image from here
 FROM cloudfoundry/run:base
 
@@ -21,8 +24,6 @@ COPY --from=build-in-docker \
     /greenplum-for-kubernetes/greenplum-operator/cmd/greenplumOperator/greenplumOperator \
     /go/pkg/mod/* \
     ${BIN_DIR}/
-RUN find / -name "github.com" \
-&& echo "123456789"
 
 RUN set -x && \
     apt-get update && \
