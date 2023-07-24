@@ -27,7 +27,8 @@ COPY --from=build-in-docker \
 #    apt-get upgrade -y && \
 #    apt-get clean && \
 #    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
-COPY /greenplum-for-kubernetes/greenplum-operator/greenplum_operator_apt_install_order.txt \
+COPY --from=build-in-docker \
+     /greenplum-for-kubernetes/greenplum-operator/greenplum_operator_apt_install_order.txt \
      /greenplum-for-kubernetes/greenplum-operator/greenplum-operator-debs \
      /greenplum-for-kubernetes/greenplum-operator/sysconf.bash \
      /greenplum-for-kubernetes/
