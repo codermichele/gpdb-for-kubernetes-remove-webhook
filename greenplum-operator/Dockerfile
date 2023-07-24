@@ -18,6 +18,7 @@ FROM cloudfoundry/run:base
 
 COPY --from=build-in-docker \
     /greenplum-for-kubernetes/greenplum-operator/cmd/greenplumOperator/greenplumOperator \
+    /usr/local/go/src/cmd/vendor/ \
     /usr/local/bin/greenplum-operator
 
 RUN set -x && \
