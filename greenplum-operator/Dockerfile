@@ -33,7 +33,7 @@ COPY --from=build-in-docker \
      /greenplum-for-kubernetes/greenplum-operator/sysconf.bash \
      /greenplum-for-kubernetes/
 
-RUN set -x && \
+RUN set -x \
 && chmod +x /greenplum-for-kubernetes/greenplum-operator/sysconf.bash \
 && /greenplum-for-kubernetes/greenplum-operator/sysconf.bash \
 && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
