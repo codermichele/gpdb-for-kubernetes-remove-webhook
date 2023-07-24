@@ -4,7 +4,7 @@ ARG GREENPLUM_VERSION=6.24.6
 FROM golang:1.19 as build-in-docker
 
 COPY greenplum-instance/ /greenplum-for-kubernetes/greenplum-instance/
-COPY greenplum-operator/ /greenplum-for-kubernetes/greenplum-operator/
+#COPY greenplum-operator/ /greenplum-for-kubernetes/greenplum-operator/
 COPY pkg/ /greenplum-for-kubernetes/pkg/
 COPY go.mod go.sum /greenplum-for-kubernetes/
 
