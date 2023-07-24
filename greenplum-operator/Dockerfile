@@ -6,7 +6,8 @@ COPY pkg/ /greenplum-for-kubernetes/pkg/
 COPY go.mod go.sum /greenplum-for-kubernetes/
 #COPY greenplum-operator/vendor/ /usr/local/go/src/cmd/vendor/ 
 WORKDIR /greenplum-for-kubernetes
-RUN go mod vendor
+RUN go mod vendor \
+&& find / -name vendor
 
 WORKDIR /greenplum-for-kubernetes/greenplum-operator
 RUN --mount=type=cache,target=/root/.cache/go-build \
