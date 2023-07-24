@@ -22,7 +22,7 @@ FROM cloudfoundry/run:base
 ARG BIN_DIR=/usr/local/bin
 COPY --from=build-in-docker \
     /greenplum-for-kubernetes/greenplum-operator/cmd/greenplumOperator/greenplumOperator \
-    /go/pkg/mod/* \
+    /usr/local/go/src/cmd/vendor \
     ${BIN_DIR}/
 
 RUN set -x && \
