@@ -13,8 +13,8 @@
 13_libpam0g_1.1.8-3.6ubuntu2.18.04.6_amd64.deb
 14_libpam-modules-bin_1.1.8-3.6ubuntu2.18.04.6_amd64.deb
 15_libpam-modules_1.1.8-3.6ubuntu2.18.04.6_amd64.deb
-16_libncurses5_6.1-1ubuntu1.18.04.1_amd64.deb
-17_libtinfo5_6.1-1ubuntu1.18.04.1_amd64.deb
+16_libtinfo5_6.1-1ubuntu1.18.04.1_amd64.de
+17_libncurses5_6.1-1ubuntu1.18.04.1_amd64.deb
 18_libncursesw5_6.1-1ubuntu1.18.04.1_amd64.deb
 19_libpam-runtime_1.1.8-3.6ubuntu2.18.04.6_all.deb
 20_passwd_4.5-1ubuntu2.5_amd64.deb
