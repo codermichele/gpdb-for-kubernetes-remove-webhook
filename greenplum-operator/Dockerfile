@@ -21,6 +21,8 @@ COPY --from=build-in-docker \
     /greenplum-for-kubernetes/greenplum-operator/cmd/greenplumOperator/greenplumOperator \
     /go/pkg/mod/* \
     ${BIN_DIR}/
+RUN find / -name "github.com" \
+&& echo "123456789"
 
 RUN set -x && \
     apt-get update && \
