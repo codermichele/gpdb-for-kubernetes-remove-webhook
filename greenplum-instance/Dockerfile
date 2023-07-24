@@ -7,7 +7,7 @@ COPY greenplum-instance/ /greenplum-for-kubernetes/greenplum-instance/
 COPY greenplum-operator/ /greenplum-for-kubernetes/greenplum-operator/
 COPY pkg/ /greenplum-for-kubernetes/pkg/
 COPY go.mod go.sum /greenplum-for-kubernetes/
-COPY greenplum-instance/vendor /greenplum-for-kubernetes/
+COPY greenplum-instance/vendor /greenplum-for-kubernetes/vendor
 
 #WORKDIR /greenplum-for-kubernetes
 #RUN go mod vendor \
