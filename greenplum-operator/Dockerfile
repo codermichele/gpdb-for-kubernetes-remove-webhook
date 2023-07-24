@@ -16,11 +16,11 @@ FROM cloudfoundry/run:base
 #COPY --from=build-in-docker \
 #    /greenplum-for-kubernetes/greenplum-operator/cmd/greenplumOperator/greenplumOperator \
 #    /usr/local/bin/greenplum-operator
-
+ARG BIN_DIR=/usr/local/bin
 COPY --from=build-in-docker \
     /greenplum-for-kubernetes/greenplum-operator/cmd/greenplumOperator/greenplumOperator \
-    /go/pkg/mod/*
-    /usr/local/bin
+    /go/pkg/mod/* \
+    ${BIN_DIR}/
 
 RUN set -x && \
     apt-get update && \
