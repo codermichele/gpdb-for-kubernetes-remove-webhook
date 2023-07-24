@@ -4,7 +4,6 @@ FROM golang:1.19 as build-in-docker
 COPY greenplum-operator/ /greenplum-for-kubernetes/greenplum-operator/
 COPY pkg/ /greenplum-for-kubernetes/pkg/
 COPY go.mod go.sum /greenplum-for-kubernetes/
-#COPY greenplum-operator/vendor/ /usr/local/go/src/cmd/vendor/ 
 WORKDIR /greenplum-for-kubernetes
 RUN go mod vendor \
 && find / -name vendor
@@ -19,8 +18,8 @@ FROM cloudfoundry/run:base
 
 COPY --from=build-in-docker \
     /greenplum-for-kubernetes/greenplum-operator/cmd/greenplumOperator/greenplumOperator \
-    /usr/local/go/src/cmd/vendor/ \
-    /usr/local/bin/greenplum-operator
+    /greenplum-for-kubernetes/vendor \
+    /usr/local/bin/
 
 RUN set -x && \
     apt-get update && \
