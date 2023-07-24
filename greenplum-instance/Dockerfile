@@ -7,10 +7,11 @@ COPY greenplum-instance/ /greenplum-for-kubernetes/greenplum-instance/
 COPY greenplum-operator/ /greenplum-for-kubernetes/greenplum-operator/
 COPY pkg/ /greenplum-for-kubernetes/pkg/
 COPY go.mod go.sum /greenplum-for-kubernetes/
+COPY greenplum-instance/vendor /greenplum-for-kubernetes/
 
-WORKDIR /greenplum-for-kubernetes
-RUN go mod vendor \
-&& find / -name vendor
+#WORKDIR /greenplum-for-kubernetes
+#RUN go mod vendor \
+#&& find / -name vendor
 
 WORKDIR /greenplum-for-kubernetes/greenplum-instance
 RUN --mount=type=cache,target=/root/.cache/go-build \
@@ -50,7 +51,7 @@ COPY --from=build-in-docker \
     /greenplum-for-kubernetes/greenplum-instance/greenplum-instance-debs/* \
     /greenplum-for-kubernetes/greenplum-instance/sysconf.bash \
     /greenplum-for-kubernetes/greenplum-instance/greenplum_instance_apt_install_order.txt \
-    /greenplum-for-kubernetes/vendor \
+#    /greenplum-for-kubernetes/vendor \
     ${TOOLS_DIR}/
 
 COPY /greenplum-instance/scripts/gpexpand_job.sh ${TOOLS_DIR}/
