@@ -20,7 +20,7 @@ FROM cloudfoundry/run:base
 
 COPY --from=build-in-docker \
     /greenplum-for-kubernetes/greenplum-operator/cmd/greenplumOperator/greenplumOperator \
-    /usr/local/bin/
+    /usr/local/bin/greenplum-operator
 
 #RUN set -x && \
 #    apt-get update && \
