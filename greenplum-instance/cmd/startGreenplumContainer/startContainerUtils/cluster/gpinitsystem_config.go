@@ -111,7 +111,7 @@ func (g *gpInitSystem) Run() error {
 		args = append(args, "-p", "/etc/config/GUCs")
 	}
 	
-	cmd := g.greenplumCommand.Command("source /usr/local/greenplum-db/greenplum_path.sh && /usr/local/greenplum-db/bin/gpinitsystem", args...)
+	cmd := g.greenplumCommand.Command("/usr/local/greenplum-db/bin/gpinitsystem", args...)
 	cmd.Stdout = g.Stdout
 	cmd.Stderr = g.Stderr
 	err = cmd.Run()
