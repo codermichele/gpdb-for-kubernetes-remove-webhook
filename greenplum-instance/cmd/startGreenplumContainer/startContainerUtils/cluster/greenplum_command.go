@@ -24,8 +24,7 @@ func (g *GreenplumCommand) Command(command string, args ...string) *exec.Cmd {
 		"PATH=/usr/local/greenplum-db/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
 		"LD_LIBRARY_PATH=/usr/local/greenplum-db/lib:/usr/local/greenplum-db/ext/python/lib",
 		"MASTER_DATA_DIRECTORY=/greenplum/data-1",
-		"PYTHONHOME=/usr/lib/python2.7",
-		//"PYTHONHOME=/usr/local/greenplum-db/ext/python",
-		"PYTHONPATH=/usr/local/greenplum-db/lib/python")
+		"PYTHONHOME=/usr/local/greenplum-db/ext/python",
+		"PYTHONPATH=/usr/lib/python2.7:/usr/lib/python2.7/plat-x86_64_gnu:/usr/lib/python2.7/lib-tk:/usr/lib/python2.7/lib-old:/usr/lib/python2.7/lib-dynload:/usr/local/lib/python2.7/dist-packages:/usr/lib/python2.7/dist-packages:/usr/local/greenplum-db/lib/python")
 	return cmd
 }
