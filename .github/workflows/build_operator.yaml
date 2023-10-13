@@ -31,4 +31,4 @@ jobs:
           file: greenplum-operator/Dockerfile
           build-args: |
             PLAID_BUILD_TAG=${{ steps.docker_tag.outputs.tag }}
-          tags: jike21/greenplum-operator:v1-remove-webhook
+          tags: jike21/greenplum-operator:v1-remove-webhook-20231013
