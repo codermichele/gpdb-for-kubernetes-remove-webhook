@@ -75,7 +75,11 @@ RUN mv /etc/sudoers /etc/sudoers.bak \
 && sed -ri 's/#PasswordAuthentication yes/PasswordAuthentication no/g' /etc/ssh/sshd_config \
 && mkdir -p /var/run/sshd  \
 && chmod 0755 /var/run/sshd \
-&& echo "gpadmin ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+&& echo "gpadmin ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers \
+&& cd /gpdb_src/gporca-3.122.0 \
+&& mkdir build \
+&& cmake -GNinja -H. -Bbuild \
+&& ninja install -C build
 
 #ENV PXF_CONF=/etc/pxf
 #RUN mkdir -p ${PXF_CONF} && chown -R gpadmin:gpadmin ${PXF_CONF}
