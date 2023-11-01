@@ -1,6 +1,6 @@
 # syntax = docker/dockerfile:experimental
 ARG TAG_PREFIX=""
-ARG GREENPLUM_VERSION=6.25.0
+ARG GREENPLUM_VERSION=6.25.3
 FROM golang:1.19 as build-in-docker
 
 COPY greenplum-instance/ /greenplum-for-kubernetes/greenplum-instance/
@@ -26,7 +26,7 @@ RUN --mount=type=cache,target=/root/.cache/go-build \
     ./cmd/waitForKnownHosts
 
 # build greenplum-instance image from here
-FROM jike21/greenplum-oss:6.25.0-20231013
+FROM jike21/greenplum-oss:6.25.3-20231101
 
 # remove gppkg because it's misleading to users in the kubernetes environment
 RUN rm -f /usr/local/greenplum-db/bin/gppkg
