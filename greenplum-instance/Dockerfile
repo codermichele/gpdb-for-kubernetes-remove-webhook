@@ -105,8 +105,7 @@ USER gpadmin
 
 # USER env is referenced by `gpconfig`, `gpcheckcat`, `gpssh`, `gpscp`, `gpinitsegment`,
 # and `gpload` utilities through `os.environ.get('USER')`
-ENV USER=gpadmin
-ENV PGPORT=5432
+ENV USER=gpadmin PGPORT=5432 TZ=Asia/Shanghai LANG=en_US.UTF-8
 WORKDIR /home/gpadmin
 
 # TODO update the deploy.sh etc. to only depends on /tools instead of /home/gpadmin/tools
