@@ -5,7 +5,7 @@ COPY greenplum-operator/ /greenplum-for-kubernetes/greenplum-operator/
 COPY pkg/ /greenplum-for-kubernetes/pkg/
 COPY go.mod go.sum /greenplum-for-kubernetes/
 COPY greenplum-operator/vendor /greenplum-for-kubernetes/vendor
-
+ENV TZ=Asia/Shanghai LANG=en_US.UTF-8
 #WORKDIR /greenplum-for-kubernetes
 #RUN go mod vendor \
 #&& find / -name vendor
