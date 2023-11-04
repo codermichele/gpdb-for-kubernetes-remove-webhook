@@ -26,7 +26,7 @@ RUN --mount=type=cache,target=/root/.cache/go-build \
     ./cmd/waitForKnownHosts
 
 # build greenplum-instance image from here
-FROM jike21/greenplum-oss:6.25.3-20231101
+FROM jike21/greenplum-oss:6.25.3-20231102
 
 # remove gppkg because it's misleading to users in the kubernetes environment
 RUN rm -f /usr/local/greenplum-db/bin/gppkg
